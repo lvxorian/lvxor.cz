@@ -811,18 +811,20 @@
 
             var cursor = document.getElementById('cursor-star');
             if (!cursor) return;
+            cursor.style.display = 'block';
 
             var cx = window.innerWidth / 2, cy = window.innerHeight / 2;
             var curX = cx, curY = cy;
             var particles = [];
             var lastSpawn = 0;
             var hovered = false;
+            var cursorW = 28, cursorH = 28;
 
             // Smooth cursor tracking
             function updateCursor() {
                 cx += (curX - cx) * 0.18;
                 cy += (curY - cy) * 0.18;
-                cursor.style.transform = 'translate(' + cx + 'px, ' + cy + 'px)';
+                cursor.style.transform = 'translate(' + (cx - cursorW/2) + 'px, ' + (cy - cursorH/2) + 'px)';
                 requestAnimationFrame(updateCursor);
             }
             requestAnimationFrame(updateCursor);
@@ -845,10 +847,12 @@
                 el.addEventListener('mouseenter', function() {
                     hovered = true;
                     cursor.classList.add('hovering');
+                    cursorW = 36; cursorH = 36;
                 });
                 el.addEventListener('mouseleave', function() {
                     hovered = false;
                     cursor.classList.remove('hovering');
+                    cursorW = 28; cursorH = 28;
                 });
             });
 
