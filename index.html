@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="cs" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="LVXOR DESIGN — Od loga po doménu. Tvorba vizuální identity, webových stránek, akvizice domén a technická správa.">
+    <title>LVXOR DESIGN — Od loga po doménu</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        serif: ['Cormorant Garamond', 'Georgia', 'serif'],
+                        sans: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        deep: '#0B112C',
+                        navy: '#1D1B4C',
+                        mystic: '#4A2E80',
+                        glow: '#A370A8',
+                        gold: '#D4A574',
+                    },
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+            --ease-spring: cubic-bezier(0.32, 0.72, 0, 1);
+            --color-deep: #0B112C;
+            --color-navy: #1D1B4C;
+            --color-mystic: #4A2E80;
+            --color-glow: #A370A8;
+            --color-gold: #D4A574;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            background: var(--color-deep);
+            color: #ffffff;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+        }
+
+        /* ── Mesh Gradient ── */
+        .mesh-layer {
+            position: fixed; inset: 0; z-index: 0; pointer-events: none;
+        }
+        .mesh-layer::before, .mesh-layer::after {
+            content: ''; position: absolute; inset: -10%; will-change: transform;
+        }
+        .mesh-layer::before {
+            background:
+                radial-gradient(ellipse 80% 50% at 20% 30%, rgba(74,46,128,0.5) 0%, transparent 55%),
+                radial-gradient(ellipse 60% 60% at 78% 60%, rgba(163,112,168,0.32) 0%, transparent 55%);
+            animation: driftA 24s ease-in-out infinite alternate;
+        }
+        .mesh-layer::after {
+            background:
+                radial-gradient(ellipse 50% 40% at 35% 70%, rgba(29,27,76,0.55) 0%, transparent 55%),
+                radial-gradient(ellipse 65% 35% at 60% 18%, rgba(74,46,128,0.38) 0%, transparent 55%);
+            animation: driftB 28s ease-in-out infinite alternate;
+        }
+        @keyframes driftA {
+            0% { transform: translate(0,0) scale(1); }
+            100% { transform: translate(-2%,3%) scale(1.05); }
+        }
+        @keyframes driftB {
+            0% { transform: translate(0,0) scale(1); }
+            100% { transform: translate(2%,-3%) scale(1.07); }
+        }
+
+        .page-content { position: relative; z-index: 1; }
+
+        /* ── Floating Nav ── */
+        .main-nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 40;
+            display: flex; justify-content: center;
+            padding-top: 1rem;
+            transition: transform 0.5s var(--ease-spring);
+        }
+        .main-nav.hidden-nav { transform: translateY(calc(-100% - 1rem)); }
+
+        .nav-star-rotate {
+            animation: navStarSpin 60s linear infinite;
+        }
+        @keyframes navStarSpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .nav-pill {
+            display: flex; align-items: center; justify-content: space-between;
+            width: calc(100% - 2rem); max-width: 48rem;
+            padding: 0.75rem 1.5rem;
+            background: rgba(255,255,255,0.035);
+            backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 9999px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.05);
+            transition: border-color 0.4s var(--ease-out-expo), background 0.4s var(--ease-out-expo);
+        }
+        .nav-pill.scrolled {
+            background: rgba(11,17,44,0.7);
+            border-color: rgba(255,255,255,0.11);
+        }
+
+        .nav-link {
+            position: relative; color: rgba(255,255,255,0.6); text-decoration: none;
+            transition: color 0.3s var(--ease-out-expo);
+        }
+        .nav-link::after {
+            content: ''; position: absolute; bottom: -4px; left: 50%;
+            width: 0; height: 1px; background: #fff;
+            transition: width 0.4s var(--ease-out-expo);
+            transform: translateX(-50%);
+        }
+        .nav-link:hover { color: #fff; }
+        .nav-link:hover::after { width: 100%; }
+
+        /* ── Reveal ── */
+        .reveal {
+            opacity: 0; transform: translateY(40px); filter: blur(6px);
+            transition: opacity 0.9s var(--ease-out-expo),
+                        transform 0.9s var(--ease-out-expo),
+                        filter 0.9s var(--ease-out-expo);
+        }
+        .reveal.visible { opacity: 1; transform: translateY(0); filter: blur(0); }
+        .reveal-d1 { transition-delay: 0.08s; }
+        .reveal-d2 { transition-delay: 0.16s; }
+        .reveal-d3 { transition-delay: 0.24s; }
+        .reveal-d4 { transition-delay: 0.32s; }
+
+        /* ── SVG ── */
+        #logo-container { perspective: 900px; }
+        #logo-svg {
+            transition: transform 0.6s cubic-bezier(0.23,1,0.32,1);
+            will-change: transform;
+        }
+        #starburst-group { transform-origin: 200px 200px; animation: starSpin 90s linear infinite; }
+        @keyframes starSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        #glow-layer { transition: opacity 0.5s var(--ease-out-expo); }
+
+        /* ── CTA ── */
+        .cta {
+            position: relative; display: inline-flex; align-items: center; justify-content: center;
+            isolation: isolate; overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #fff;
+            font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+            font-weight: 500; letter-spacing: 0.04em;
+            padding: 1rem 2.5rem; border-radius: 9999px;
+            text-decoration: none; cursor: pointer;
+            transition: border-color 0.4s var(--ease-out-expo),
+                        transform 0.16s var(--ease-out-expo),
+                        box-shadow 0.4s var(--ease-out-expo);
+            user-select: none; -webkit-tap-highlight-color: transparent;
+        }
+        .cta::before {
+            content: ''; position: absolute; inset: 0; z-index: -1;
+            background: linear-gradient(135deg, var(--color-mystic), var(--color-glow));
+            transform: translateX(-101%);
+            transition: transform 0.6s var(--ease-out-expo);
+            border-radius: 9999px;
+        }
+        .cta:hover { border-color: transparent; box-shadow: 0 0 48px rgba(163,112,168,0.22); }
+        .cta:hover::before { transform: translateX(0); }
+        .cta:active { transform: scale(0.97); }
+        .cta-magnet { transition: transform 0.18s ease-out; will-change: transform; }
+
+        .cta-icon {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 1.75rem; height: 1.75rem; border-radius: 9999px;
+            background: rgba(255,255,255,0.07); margin-left: 0.625rem;
+            transition: transform 0.35s var(--ease-spring), background 0.35s var(--ease-out-expo);
+        }
+        .cta:hover .cta-icon { background: rgba(255,255,255,0.16); transform: translate(2px,-1px) scale(1.1); }
+
+        /* ── Service Row ── */
+        .svc-shell {
+            position: relative; border-radius: 2rem; padding: 1px;
+            background: rgba(255,255,255,0.025);
+            border: 1px solid rgba(255,255,255,0.04);
+            transition: background 0.5s var(--ease-out-expo),
+                        border-color 0.5s var(--ease-out-expo);
+            overflow: hidden;
+        }
+        .svc-shell:hover {
+            background: rgba(255,255,255,0.05);
+            border-color: rgba(255,255,255,0.1);
+        }
+        .svc-core {
+            border-radius: calc(2rem - 1px);
+            background: rgba(11,17,44,0.35);
+            position: relative; overflow: hidden;
+        }
+        .svc-line {
+            position: absolute; top: 2.5rem; bottom: 2.5rem; width: 2px;
+            border-radius: 1px; background: var(--accent, transparent);
+            opacity: 0; transform: scaleY(0.3); transform-origin: center;
+            transition: opacity 0.5s var(--ease-out-expo), transform 0.5s var(--ease-out-expo);
+        }
+        .svc-line.l { left: 0; }
+        .svc-line.r { right: 0; }
+        .svc-shell:hover .svc-line { opacity: 0.5; transform: scaleY(1); }
+        .svc-num {
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            transition: opacity 0.5s var(--ease-out-expo), color 0.5s var(--ease-out-expo);
+        }
+        .svc-shell:hover .svc-num { opacity: 0.14; }
+        .svc-title { transition: transform 0.5s var(--ease-out-expo); }
+        .svc-shell:hover .svc-title { transform: translateX(6px); }
+        .svc-shell.even:hover .svc-title { transform: translateX(-6px); }
+
+        /* ── Email Link ── */
+        .email-link {
+            position: relative; display: inline-block;
+            color: rgba(255,255,255,0.78); text-decoration: none;
+            transition: color 0.35s var(--ease-out-expo);
+        }
+        .email-link::after {
+            content: ''; position: absolute; bottom: -2px; left: 0;
+            width: 100%; height: 1px; background: var(--color-glow);
+            transform: scaleX(0); transform-origin: right;
+            transition: transform 0.5s var(--ease-out-expo);
+        }
+        .email-link:hover { color: #fff; }
+        .email-link:hover::after { transform: scaleX(1); transform-origin: left; }
+
+        /* ── Hamburger ── */
+        .hamburger {
+            display: flex; flex-direction: column; gap: 5px;
+            background: none; border: none; cursor: pointer;
+            padding: 8px; z-index: 60;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .hamburger span {
+            display: block; width: 22px; height: 1.5px;
+            background: rgba(255,255,255,0.7);
+            transition: all 0.35s var(--ease-out-expo);
+            transform-origin: center; border-radius: 1px;
+        }
+        .hamburger.active span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+        .hamburger.active span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+        .hamburger.active span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+        /* ── Mobile Menu ── */
+        .mob-menu {
+            position: fixed; inset: 0; z-index: 50;
+            background: rgba(11,17,44,0.95);
+            backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 3rem;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.5s var(--ease-out-expo);
+        }
+        .mob-menu.open { opacity: 1; pointer-events: auto; }
+        .mob-menu a {
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-size: 2.25rem; font-weight: 300;
+            color: rgba(255,255,255,0.65); text-decoration: none;
+            letter-spacing: 0.08em;
+            opacity: 0; transform: translateY(24px);
+            transition: opacity 0.5s var(--ease-out-expo),
+                        transform 0.5s var(--ease-out-expo),
+                        color 0.3s var(--ease-out-expo);
+        }
+        .mob-menu a.in { opacity: 1; transform: translateY(0); }
+        .mob-menu a:hover { color: #fff; }
+
+        /* ── Reduced Motion ── */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+            .reveal { opacity: 1; transform: none; filter: none; }
+            .mob-menu a { opacity: 1; transform: none; }
+        }
+
+        @media (hover: none) and (pointer: coarse) {
+            .cta::before { display: none; }
+            .cta:active { background: linear-gradient(135deg, var(--color-mystic), var(--color-glow)); border-color: transparent; }
+        }
+
+        ::selection { background: rgba(163,112,168,0.35); color: #fff; }
+
+        /* ── Custom Cursor Star ── */
+        @media (hover: hover) and (pointer: fine) {
+            body { cursor: none; }
+            a, button, [role="button"], .cta, .hamburger, .nav-pill a { cursor: none; }
+        }
+        .cursor-star {
+            position: fixed; top: 0; left: 0; z-index: 100;
+            width: 28px; height: 28px;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            will-change: transform;
+            transition: width 0.2s var(--ease-out-expo), height 0.2s var(--ease-out-expo);
+        }
+        .cursor-star.hovering {
+            width: 36px; height: 36px;
+        }
+        .cursor-star svg {
+            width: 100%; height: 100%;
+            filter: drop-shadow(0 0 6px rgba(163,112,168,0.5));
+        }
+        .cursor-star-inner {
+            transform-origin: 20px 20px;
+            animation: cursorSpin 15s linear infinite;
+        }
+        @keyframes cursorSpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* ── Glitter Particles ── */
+        .glitter {
+            position: fixed; z-index: 99; pointer-events: none;
+            width: 4px; height: 4px;
+            border-radius: 50%;
+            animation: glitterBurst 0.7s var(--ease-out-expo) forwards;
+            will-change: transform, opacity;
+        }
+        .glitter.star-particle {
+            width: 6px; height: 6px;
+            border-radius: 0;
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+        }
+        @keyframes glitterBurst {
+            0%   { opacity: 1; transform: translate(0, 0) scale(1); }
+            100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .cursor-star { display: none; }
+            .glitter { display: none; }
+            @media (hover: hover) and (pointer: fine) {
+                body { cursor: auto; }
+                a, button, [role="button"], .cta, .hamburger, .nav-pill a { cursor: pointer; }
+            }
+        }
+
+        @media (hover: none) and (pointer: coarse) {
+            .cursor-star { display: none; }
+            .glitter { display: none; }
+            body { cursor: auto; }
+        }
+
+        /* ── Hero staggers ── */
+        .hero-line-1 { transition-delay: 0s; }
+        .hero-line-3 { transition-delay: 0.18s; }
+        .hero-line-4 { transition-delay: 0.36s; }
+    </style>
+</head>
+<body>
+
+    <div class="mesh-layer" aria-hidden="true"></div>
+
+    <!-- Custom Cursor -->
+    <div class="cursor-star" id="cursor-star" aria-hidden="true">
+        <svg viewBox="0 0 40 40">
+            <defs>
+                <filter id="cs-glow" x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur stdDeviation="1.5" result="b"/>
+                    <feComposite in="SourceGraphic" in2="b" operator="over"/>
+                </filter>
+                <radialGradient id="cs-grad" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stop-color="#FFFFFF" stop-opacity="1"/>
+                    <stop offset="40%" stop-color="#E8C8F0" stop-opacity="0.8"/>
+                    <stop offset="100%" stop-color="#A370A8" stop-opacity="0.3"/>
+                </radialGradient>
+            </defs>
+            <g class="cursor-star-inner">
+                <polygon points="37.8,20 33.4,25.6 35.0,33.0 27.1,30.2 20.0,36.0 20.0,36.0 20.0,36.0 12.9,30.2 5.0,33.0 6.6,25.6 2.2,20.0 6.6,14.4 5.0,7.0 12.9,9.8 20.0,4.0 20.0,4.0 20.0,4.0 27.1,9.8 35.0,7.0 33.4,14.4" fill="url(#cs-grad)" filter="url(#cs-glow)" opacity="0.85"/>
+            </g>
+            <circle cx="20" cy="20" r="1.8" fill="#FFFFFF" opacity="0.95"/>
+        </svg>
+    </div>
+
+    <!-- ── NAV ─────────────────────────────── -->
+    <header class="main-nav" id="main-nav">
+        <nav class="nav-pill" id="nav-pill">
+            <a href="#" class="flex items-center gap-2.5 font-serif text-lg sm:text-xl tracking-[0.12em] text-white/80 hover:text-white transition-colors duration-300 no-underline select-none group/logo">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6 shrink-0" viewBox="0 0 40 40" aria-hidden="true">
+                    <defs>
+                        <filter id="nav-glow" x="-50%" y="-50%" width="200%" height="200%">
+                            <feGaussianBlur stdDeviation="1.2" result="b"/>
+                            <feComposite in="SourceGraphic" in2="b" operator="over"/>
+                        </filter>
+                        <radialGradient id="nav-star-grad" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" stop-color="#D8B8E0" stop-opacity="0.95"/>
+                            <stop offset="40%" stop-color="#4A2E80" stop-opacity="0.6"/>
+                            <stop offset="100%" stop-color="#1D1B4C" stop-opacity="0.08"/>
+                        </radialGradient>
+                        <radialGradient id="nav-comp-grad" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" stop-color="#FFFFFF" stop-opacity="1"/>
+                            <stop offset="35%" stop-color="#F0D8F8" stop-opacity="0.85"/>
+                            <stop offset="100%" stop-color="#A370A8" stop-opacity="0.4"/>
+                        </radialGradient>
+                    </defs>
+                    <g transform-origin="20 20" class="nav-star-rotate">
+                        <polygon points="37.8,20 33.4,25.6 35.0,33.0 27.1,30.2 20.0,36.0 20.0,36.0 20.0,36.0 12.9,30.2 5.0,33.0 6.6,25.6 2.2,20.0 6.6,14.4 5.0,7.0 12.9,9.8 20.0,4.0 20.0,4.0 20.0,4.0 27.1,9.8 35.0,7.0 33.4,14.4" fill="url(#nav-star-grad)" filter="url(#nav-glow)" opacity="0.7"/>
+                    </g>
+                    <g>
+                        <polygon points="20.0,2.2 23.2,16.8 16.8,16.8 2.2,20.0 16.8,23.2 16.8,16.8 23.2,16.8 23.2,23.2 37.8,20.0 23.2,16.8" fill="url(#nav-comp-grad)" filter="url(#nav-glow)"/>
+                    </g>
+                    <circle cx="20" cy="20" r="1.5" fill="#FFFFFF" opacity="0.95"/>
+                </svg>
+                LVXOR DESIGN
+            </a>
+            <div class="hidden lg:flex items-center gap-8 text-xs tracking-[0.08em] uppercase">
+                <a href="#about" class="nav-link">O nás</a>
+                <a href="#sluzby" class="nav-link">Služby</a>
+                <a href="#kontakt" class="nav-link">Kontakt</a>
+            </div>
+            <button class="hamburger lg:hidden" id="hamburger" aria-label="Menu" aria-expanded="false">
+                <span></span><span></span><span></span>
+            </button>
+        </nav>
+    </header>
+
+    <div class="mob-menu lg:hidden" id="mob-menu" aria-hidden="true">
+        <a href="#about">O nás</a>
+        <a href="#sluzby">Služby</a>
+        <a href="#kontakt">Kontakt</a>
+    </div>
+
+    <!-- ── PAGE ─────────────────────────────── -->
+    <main class="page-content">
+
+        <!-- ── HERO ──────────────────────────── -->
+        <section id="hero" class="min-h-[100dvh] flex items-center px-6 sm:px-8 lg:px-16 pt-20 lg:pt-0">
+            <div class="w-full max-w-[1600px] mx-auto grid lg:grid-cols-[1fr_auto] gap-8 lg:gap-16 items-center">
+
+                <div class="order-2 lg:order-1">
+                    <h1 class="reveal hero-line-1 font-serif font-light leading-[0.9] tracking-[-0.01em] text-white text-[13vw] sm:text-[12vw] lg:text-[9rem] xl:text-[11rem]">
+                        Tvoříme digitální značky
+                    </h1>
+                    <p class="reveal hero-line-3 font-sans text-base sm:text-lg lg:text-xl text-white/30 font-light max-w-md mt-6 lg:mt-10 leading-relaxed">
+                        Od loga po doménu — kompletní digitální identita pro ambiciózní značky.
+                    </p>
+                    <div class="reveal hero-line-4 mt-8 lg:mt-12">
+                        <a href="#sluzby" class="cta cta-magnet text-sm sm:text-base px-8 py-4">
+                            Co umíme
+                            <span class="cta-icon" aria-hidden="true">
+                                <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M1 6h10M6 1l5 5-5 5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            </span>
+                        </a>
+                    </div>
+                </div>
+
+                <div id="logo-container" class="order-1 lg:order-2 flex justify-center w-full max-w-[240px] sm:max-w-[300px] lg:max-w-[400px] xl:max-w-[480px] mx-auto" aria-hidden="true">
+                    <!-- SVG generated by JS -->
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ── ABOUT ──────────────────────────── -->
+        <section id="about" class="py-32 lg:py-44 px-6 sm:px-8 lg:px-16">
+            <div class="max-w-[1400px] mx-auto">
+                <div class="grid lg:grid-cols-[1fr_1.4fr] gap-12 lg:gap-28 items-start">
+                    <div class="reveal">
+                        <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-light leading-[1.06] tracking-[-0.01em] text-white">
+                            Spojení estetiky a&nbsp;funkčnosti
+                        </h2>
+                    </div>
+                    <div class="reveal reveal-d1">
+                        <p class="text-base sm:text-lg lg:text-xl text-white/30 font-light leading-relaxed max-w-xl">
+                            Jsme designové studio na pomezí kreativity a technologií. Tvoříme digitální značky, které fungují — od loga přes web až po dlouhodobou správu. Každý projekt řešíme od strategie po nasazení. Věříme, že skvělý design je ten, který prodává.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── SERVICES ──────────────────────── -->
+        <section id="sluzby" class="pb-32 lg:pb-44 px-6 sm:px-8 lg:px-16">
+            <div class="max-w-[1400px] mx-auto">
+
+                <div class="reveal mb-20 lg:mb-28">
+                    <p class="font-sans text-xs tracking-[0.2em] uppercase text-white/25 mb-6">Co umíme</p>
+                    <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-light leading-[1.06] tracking-[-0.01em] text-white max-w-2xl">
+                        Kompletní digitální servis — od&nbsp;prvního nápadu po&nbsp;dlouhodobou správu
+                    </h2>
+                </div>
+
+                <div class="flex flex-col gap-4 lg:gap-6">
+
+                    <!-- Service 1 -->
+                    <article class="reveal reveal-d1 svc-shell" style="--accent:#4A9EFF">
+                        <div class="svc-core py-10 lg:py-14 px-6 sm:px-10 lg:px-16">
+                            <div class="svc-line l"></div>
+                            <span class="svc-num absolute top-6 right-6 lg:top-8 lg:right-10 text-[6rem] sm:text-[8rem] lg:text-[12rem] font-light leading-none text-white/[0.025] select-none pointer-events-none z-0">01</span>
+                            <div class="relative z-10 grid lg:grid-cols-[1fr_1.6fr] gap-4 lg:gap-20 items-end">
+                                <div>
+                                    <h3 class="svc-title font-serif text-2xl sm:text-3xl lg:text-4xl font-light leading-[1.08] tracking-[-0.01em] text-white mb-2 lg:mb-3">Tvorba loga a digitální identita</h3>
+                                    <p class="font-sans text-sm lg:text-base text-white/35 font-light tracking-[0.06em] uppercase">Definujeme vaši značku</p>
+                                </div>
+                                <p class="text-sm sm:text-base lg:text-lg text-white/22 leading-relaxed max-w-lg">Vaše identita začíná zde. Vytváříme loga, která nejsou jen symboly, ale vizuální vyprávění o vaší značce. Od barevné palety po typografii — konzistentní systém, který rezonuje.</p>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Service 2 -->
+                    <article class="reveal reveal-d2 svc-shell even" style="--accent:#7C5CFC">
+                        <div class="svc-core py-10 lg:py-14 px-6 sm:px-10 lg:px-16">
+                            <div class="svc-line r"></div>
+                            <span class="svc-num absolute top-6 left-6 lg:top-8 lg:left-10 text-[6rem] sm:text-[8rem] lg:text-[12rem] font-light leading-none text-white/[0.025] select-none pointer-events-none z-0">02</span>
+                            <div class="relative z-10 grid lg:grid-cols-[1.6fr_1fr] gap-4 lg:gap-20 items-end">
+                                <div class="lg:order-2">
+                                    <h3 class="svc-title font-serif text-2xl sm:text-3xl lg:text-4xl font-light leading-[1.08] tracking-[-0.01em] text-white mb-2 lg:mb-3">Vývoj webových stránek</h3>
+                                    <p class="font-sans text-sm lg:text-base text-white/35 font-light tracking-[0.06em] uppercase">Moderní weby, které fungují</p>
+                                </div>
+                                <p class="lg:order-1 text-sm sm:text-base lg:text-lg text-white/22 leading-relaxed max-w-lg">Navrhujeme a vyvíjíme interaktivní weby na míru. E-shopy, korporátní prezentace, brandové microsites — vždy s důrazem na rychlost, responsivitu a konverzi.</p>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Service 3 -->
+                    <article class="reveal reveal-d3 svc-shell" style="--accent:#D4A574">
+                        <div class="svc-core py-10 lg:py-14 px-6 sm:px-10 lg:px-16">
+                            <div class="svc-line l"></div>
+                            <span class="svc-num absolute top-6 right-6 lg:top-8 lg:right-10 text-[6rem] sm:text-[8rem] lg:text-[12rem] font-light leading-none text-white/[0.025] select-none pointer-events-none z-0">03</span>
+                            <div class="relative z-10 grid lg:grid-cols-[1fr_1.6fr] gap-4 lg:gap-20 items-end">
+                                <div>
+                                    <h3 class="svc-title font-serif text-2xl sm:text-3xl lg:text-4xl font-light leading-[1.08] tracking-[-0.01em] text-white mb-2 lg:mb-3">Akvizice domén a strategie</h3>
+                                    <p class="font-sans text-sm lg:text-base text-white/35 font-light tracking-[0.06em] uppercase">Zajistíme váš digitální terén</p>
+                                </div>
+                                <p class="text-sm sm:text-base lg:text-lg text-white/22 leading-relaxed max-w-lg">Máte název, ale doména je zabraná? Vyjednáme ji pro vás. Nabízíme anonymní akvizici prémiových domén a strategické poradenství při výběru názvu značky.</p>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Service 4 -->
+                    <article class="reveal reveal-d4 svc-shell even" style="--accent:#A370A8">
+                        <div class="svc-core py-10 lg:py-14 px-6 sm:px-10 lg:px-16">
+                            <div class="svc-line r"></div>
+                            <span class="svc-num absolute top-6 left-6 lg:top-8 lg:left-10 text-[6rem] sm:text-[8rem] lg:text-[12rem] font-light leading-none text-white/[0.025] select-none pointer-events-none z-0">04</span>
+                            <div class="relative z-10 grid lg:grid-cols-[1.6fr_1fr] gap-4 lg:gap-20 items-end">
+                                <div class="lg:order-2">
+                                    <h3 class="svc-title font-serif text-2xl sm:text-3xl lg:text-4xl font-light leading-[1.08] tracking-[-0.01em] text-white mb-2 lg:mb-3">Správa a údržba webů</h3>
+                                    <p class="font-sans text-sm lg:text-base text-white/35 font-light tracking-[0.06em] uppercase">Váš web v bezpečí a vždy aktuální</p>
+                                </div>
+                                <p class="lg:order-1 text-sm sm:text-base lg:text-lg text-white/22 leading-relaxed max-w-lg">Spuštěním webu naše práce nekončí. Nabízíme kompletní správu — od aktualizací a bezpečnostních auditů po hosting a optimalizaci výkonu. Vy se věnujte byznysu.</p>
+                            </div>
+                        </div>
+                    </article>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ── CONTACT ────────────────────────── -->
+        <section id="kontakt" class="py-32 lg:py-44 px-6 sm:px-8 lg:px-16">
+            <div class="max-w-[900px] mx-auto text-center">
+
+                <div class="reveal mb-12 lg:mb-16">
+                    <p class="font-sans text-xs tracking-[0.2em] uppercase text-white/25 mb-8">Kontakt</p>
+                    <h2 class="font-serif text-3xl sm:text-4xl lg:text-6xl xl:text-7xl font-light leading-[1.06] tracking-[-0.01em] text-white mb-8 lg:mb-10">
+                        Začněme spolu
+                    </h2>
+                    <p class="text-base sm:text-lg lg:text-xl text-white/25 font-light leading-relaxed max-w-lg mx-auto">
+                        Máte projekt, nápad nebo jen otázku? Ozvěte se — rádi si dáme kafe a probereme, co můžeme společně dokázat.
+                    </p>
+                </div>
+
+                <div class="reveal reveal-d1 mb-8 lg:mb-10">
+                    <a href="mailto:info@lvxor.cz" class="email-link font-serif text-2xl sm:text-3xl lg:text-5xl xl:text-6xl font-light tracking-[0.02em]">
+                        info@lvxor.cz
+                    </a>
+                </div>
+
+                <div class="reveal reveal-d1 mb-12 lg:mb-16">
+                    <a href="tel:+420720195875" class="email-link font-serif text-xl sm:text-2xl lg:text-3xl font-light tracking-[0.03em] text-white/55">
+                        +420 720 195 875
+                    </a>
+                </div>
+
+                <div class="reveal reveal-d2">
+                    <a href="mailto:info@lvxor.cz" class="cta cta-magnet text-sm sm:text-base px-10 py-4">
+                        Napište nám
+                        <span class="cta-icon" aria-hidden="true">
+                            <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M1 6h10M6 1l5 5-5 5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </span>
+                    </a>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ── FOOTER ─────────────────────────── -->
+        <footer class="border-t border-white/[0.04] py-10 px-6 sm:px-8 lg:px-16">
+            <div class="max-w-[1400px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-xs lg:text-sm text-white/15 font-light tracking-[0.05em]">
+                <span>&copy; 2026 LVXOR DESIGN</span>
+                <span>Od loga po doménu</span>
+            </div>
+        </footer>
+
+    </main>
+
+    <script>
+    (function() {
+        'use strict';
+
+        // ── SVG Logo ────────────────────────────
+        function createLogo() {
+            var c = document.getElementById('logo-container');
+            if (!c) return;
+            var N = 'http://www.w3.org/2000/svg', CX = 200, CY = 200;
+            var svg = document.createElementNS(N, 'svg');
+            svg.setAttribute('id', 'logo-svg');
+            svg.setAttribute('viewBox', '0 0 400 400');
+            svg.setAttribute('width', '100%');
+            svg.setAttribute('height', '100%');
+            svg.setAttribute('aria-hidden', 'true');
+
+            var defs = document.createElementNS(N, 'defs');
+
+            var gf = document.createElementNS(N, 'filter');
+            gf.setAttribute('id', 'glow');
+            gf.setAttribute('x', '-50%'); gf.setAttribute('y', '-50%');
+            gf.setAttribute('width', '200%'); gf.setAttribute('height', '200%');
+            gf.innerHTML = '<feGaussianBlur stdDeviation="5" result="b"/><feComposite in="SourceGraphic" in2="b" operator="over"/>';
+            defs.appendChild(gf);
+
+            var gs = document.createElementNS(N, 'filter');
+            gs.setAttribute('id', 'glow-strong');
+            gs.setAttribute('x', '-50%'); gs.setAttribute('y', '-50%');
+            gs.setAttribute('width', '200%'); gs.setAttribute('height', '200%');
+            gs.innerHTML = '<feGaussianBlur stdDeviation="4" result="b1"/><feGaussianBlur stdDeviation="10" result="b2"/><feMerge><feMergeNode in="b2"/><feMergeNode in="b1"/><feMergeNode in="SourceGraphic"/></feMerge>';
+            defs.appendChild(gs);
+
+            function radGrad(id, stops) {
+                var g = document.createElementNS(N, 'radialGradient');
+                g.setAttribute('id', id);
+                g.setAttribute('cx', '50%'); g.setAttribute('cy', '50%'); g.setAttribute('r', '50%');
+                stops.forEach(function(s) {
+                    var st = document.createElementNS(N, 'stop');
+                    st.setAttribute('offset', s[0]); st.setAttribute('stop-color', s[1]); st.setAttribute('stop-opacity', s[2]);
+                    g.appendChild(st);
+                });
+                return g;
+            }
+
+            defs.appendChild(radGrad('star-grad', [['0%','#D8B8E0','0.95'],['40%','#4A2E80','0.55'],['100%','#1D1B4C','0.06']]));
+            defs.appendChild(radGrad('compass-grad', [['0%','#FFFFFF','1'],['30%','#F0D8F8','0.9'],['100%','#A370A8','0.45']]));
+            defs.appendChild(radGrad('orb-grad', [['0%','#FFFFFF','0.38'],['100%','#A370A8','0']]));
+            svg.appendChild(defs);
+
+            function poly(points, fill, filter, opacity, id) {
+                var p = document.createElementNS(N, 'polygon');
+                p.setAttribute('points', points);
+                p.setAttribute('fill', fill);
+                if (filter) p.setAttribute('filter', filter);
+                if (opacity) p.setAttribute('opacity', opacity);
+                if (id) p.setAttribute('id', id);
+                return p;
+            }
+
+            function genPoints(count, angleStep, offsetAngle, r1, r2) {
+                var pts = '';
+                for (var i = 0; i < count; i++) {
+                    var a = ((i * angleStep) + offsetAngle) * Math.PI / 180;
+                    var r = i % 2 === 0 ? r1 : r2;
+                    pts += (CX + r * Math.cos(a)).toFixed(1) + ',' + (CY + r * Math.sin(a)).toFixed(1) + ' ';
+                }
+                return pts.trim();
+            }
+
+            var sg = document.createElementNS(N, 'g'); sg.setAttribute('id', 'starburst-group');
+            sg.appendChild(poly(genPoints(16, 22.5, -90, 178, 58), 'url(#star-grad)', 'url(#glow)', '0.8'));
+            svg.appendChild(sg);
+
+            var cg = document.createElementNS(N, 'g'); cg.setAttribute('id', 'compass-group');
+            cg.appendChild(poly(genPoints(8, 45, -90, 68, 20), 'url(#compass-grad)', 'url(#glow-strong)', null, 'compass-star'));
+            svg.appendChild(cg);
+
+            var orb = document.createElementNS(N, 'circle');
+            orb.setAttribute('cx', CX); orb.setAttribute('cy', CY); orb.setAttribute('r', '44');
+            orb.setAttribute('fill', 'url(#orb-grad)'); orb.setAttribute('id', 'glow-layer');
+            orb.setAttribute('opacity', '0.28'); orb.setAttribute('filter', 'url(#glow-strong)');
+            svg.appendChild(orb);
+
+            var dot = document.createElementNS(N, 'circle');
+            dot.setAttribute('cx', CX); dot.setAttribute('cy', CY); dot.setAttribute('r', '3.5');
+            dot.setAttribute('fill', '#FFFFFF'); dot.setAttribute('opacity', '0.9');
+            svg.appendChild(dot);
+
+            c.appendChild(svg);
+        }
+        createLogo();
+
+        // ── Mouse Tilt ──────────────────────────
+        (function() {
+            var container = document.getElementById('logo-container');
+            var svg = document.getElementById('logo-svg');
+            var orb = document.getElementById('glow-layer');
+            if (!container || !svg) return;
+            var hero = document.getElementById('hero');
+            function move(e) {
+                var r = container.getBoundingClientRect();
+                var dx = (e.clientX - r.left - r.width/2) / (r.width/2);
+                var dy = (e.clientY - r.top - r.height/2) / (r.height/2);
+                var d = Math.sqrt(dx*dx + dy*dy);
+                svg.style.transform = 'perspective(900px) rotateY('+(dx*8)+'deg) rotateX('+(-dy*8)+'deg) scale('+(1+d*0.04)+')';
+                if (orb) orb.setAttribute('opacity', (0.28 + d*0.48).toFixed(2));
+            }
+            function leave() {
+                svg.style.transform = 'perspective(900px) rotateY(0deg) rotateX(0deg) scale(1)';
+                if (orb) orb.setAttribute('opacity', '0.28');
+            }
+            (hero || container).addEventListener('mousemove', move, {passive:true});
+            (hero || container).addEventListener('mouseleave', leave);
+        })();
+
+        // ── Magnetic Buttons ────────────────────
+        document.querySelectorAll('.cta-magnet').forEach(function(b) {
+            b.addEventListener('mousemove', function(e) {
+                var r = b.getBoundingClientRect();
+                b.style.transform = 'translate('+((e.clientX-r.left-r.width/2)*0.22)+'px, '+((e.clientY-r.top-r.height/2)*0.22)+'px)';
+            });
+            b.addEventListener('mouseleave', function() { b.style.transform = 'translate(0,0)'; });
+        });
+
+        // ── Scroll Reveal ───────────────────────
+        (function() {
+            var obs = new IntersectionObserver(function(es) {
+                es.forEach(function(e) { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+            }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+            document.querySelectorAll('.reveal').forEach(function(el) { obs.observe(el); });
+        })();
+
+        // ── Nav Scroll ──────────────────────────
+        (function() {
+            var nav = document.getElementById('main-nav');
+            var pill = document.getElementById('nav-pill');
+            if (!nav) return;
+            var last = 0, ticking = false;
+            window.addEventListener('scroll', function() {
+                if (!ticking) {
+                    requestAnimationFrame(function() {
+                        var cur = window.scrollY || window.pageYOffset;
+                        if (cur > last && cur > 100) nav.classList.add('hidden-nav');
+                        else nav.classList.remove('hidden-nav');
+                        if (pill) { if (cur > 60) pill.classList.add('scrolled'); else pill.classList.remove('scrolled'); }
+                        last = cur <= 0 ? 0 : cur;
+                        ticking = false;
+                    });
+                    ticking = true;
+                }
+            }, {passive:true});
+        })();
+
+        // ── Mobile Menu ─────────────────────────
+        (function() {
+            var btn = document.getElementById('hamburger');
+            var menu = document.getElementById('mob-menu');
+            if (!btn || !menu) return;
+            var links = menu.querySelectorAll('a');
+            var open = false;
+            function show() {
+                open = true;
+                btn.classList.add('active'); btn.setAttribute('aria-expanded','true');
+                menu.classList.add('open'); menu.setAttribute('aria-hidden','false');
+                document.body.style.overflow = 'hidden';
+                links.forEach(function(l, i) { l.style.transitionDelay = (i*80+100)+'ms'; l.classList.add('in'); });
+            }
+            function hide() {
+                open = false;
+                btn.classList.remove('active'); btn.setAttribute('aria-expanded','false');
+                menu.classList.remove('open'); menu.setAttribute('aria-hidden','true');
+                document.body.style.overflow = '';
+                links.forEach(function(l) { l.style.transitionDelay = '0ms'; l.classList.remove('in'); });
+            }
+            btn.addEventListener('click', function() { if (open) hide(); else show(); });
+            links.forEach(function(l) { l.addEventListener('click', hide); });
+            document.addEventListener('keydown', function(e) { if (e.key==='Escape' && open) hide(); });
+        })();
+
+        // ── Smooth Scroll ───────────────────────
+        document.querySelectorAll('a[href^="#"]').forEach(function(a) {
+            a.addEventListener('click', function(e) {
+                var id = this.getAttribute('href');
+                if (id==='#') return;
+                var t = document.querySelector(id);
+                if (!t) return;
+                e.preventDefault();
+                var top = t.getBoundingClientRect().top + (window.scrollY||window.pageYOffset) - 90;
+                window.scrollTo({top:top, behavior:'smooth'});
+            });
+        });
+
+        // ── Custom Cursor & Glitter Trail ─────────
+        (function() {
+            if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+            var cursor = document.getElementById('cursor-star');
+            if (!cursor) return;
+
+            var cx = window.innerWidth / 2, cy = window.innerHeight / 2;
+            var curX = cx, curY = cy;
+            var particles = [];
+            var lastSpawn = 0;
+            var hovered = false;
+
+            // Smooth cursor tracking
+            function updateCursor() {
+                cx += (curX - cx) * 0.18;
+                cy += (curY - cy) * 0.18;
+                cursor.style.transform = 'translate(' + cx + 'px, ' + cy + 'px)';
+                requestAnimationFrame(updateCursor);
+            }
+            requestAnimationFrame(updateCursor);
+
+            document.addEventListener('mousemove', function(e) {
+                curX = e.clientX;
+                curY = e.clientY;
+
+                // Spawn glitter particles (throttled)
+                var now = performance.now();
+                if (now - lastSpawn > 40) {
+                    lastSpawn = now;
+                    spawnParticle(e.clientX, e.clientY);
+                }
+            }, { passive: true });
+
+            // Scale up cursor on interactive elements
+            var hoverTargets = document.querySelectorAll('a, button, .cta, .hamburger, [role="button"]');
+            hoverTargets.forEach(function(el) {
+                el.addEventListener('mouseenter', function() {
+                    hovered = true;
+                    cursor.classList.add('hovering');
+                });
+                el.addEventListener('mouseleave', function() {
+                    hovered = false;
+                    cursor.classList.remove('hovering');
+                });
+            });
+
+            // Re-attach hover listeners on dynamically added elements
+            var hoverObserver = new MutationObserver(function() {
+                hoverTargets = document.querySelectorAll('a, button, .cta, .hamburger, [role="button"]');
+            });
+            hoverObserver.observe(document.body, { childList: true, subtree: true });
+
+            function spawnParticle(x, y) {
+                var p = document.createElement('div');
+                var colors = ['#A370A8', '#D8B8E0', '#FFFFFF', '#D4A574', '#7C5CFC', '#4A9EFF'];
+                var color = colors[Math.floor(Math.random() * colors.length)];
+                var angle = Math.random() * Math.PI * 2;
+                var distance = 20 + Math.random() * 40;
+                var dx = Math.cos(angle) * distance;
+                var dy = Math.sin(angle) * distance;
+                var size = 2 + Math.random() * 3;
+
+                p.className = 'glitter';
+                if (Math.random() > 0.5) p.classList.add('star-particle');
+                p.style.cssText =
+                    'left:' + x + 'px;' +
+                    'top:' + y + 'px;' +
+                    'width:' + size + 'px;' +
+                    'height:' + size + 'px;' +
+                    'background:' + color + ';' +
+                    '--dx:' + dx + 'px;' +
+                    '--dy:' + dy + 'px;' +
+                    'box-shadow: 0 0 ' + (size * 2) + 'px ' + color + ';';
+
+                document.body.appendChild(p);
+                particles.push(p);
+
+                // Clean up after animation
+                setTimeout(function() {
+                    if (p.parentNode) p.parentNode.removeChild(p);
+                    var idx = particles.indexOf(p);
+                    if (idx > -1) particles.splice(idx, 1);
+                }, 750);
+
+                // Limit total particles
+                if (particles.length > 40) {
+                    var old = particles.shift();
+                    if (old && old.parentNode) old.parentNode.removeChild(old);
+                }
+            }
+        })();
+
+    })();
+    </script>
+</body>
+</html>
